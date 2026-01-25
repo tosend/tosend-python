@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tosend"
+version = "1.0.0"
+description = "Official Python SDK for the ToSend email API"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "ToSend", email = "support@tosend.com"}
+]
+keywords = ["email", "api", "tosend", "transactional", "mail"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Email",
+    "Typing :: Typed",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.urls]
+Homepage = "https://tosend.com"
+Documentation = "https://tosend.com/docs"
+Repository = "https://github.com/tosend/tosend-python"
+Issues = "https://github.com/tosend/tosend-python/issues"
+
+[tool.setuptools.packages.find]
+include = ["tosend*"]
+
+[tool.setuptools.package-data]
+tosend = ["py.typed"]
