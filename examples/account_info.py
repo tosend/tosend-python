@@ -14,11 +14,11 @@ try:
     info = client.get_account_info()
 
     print("=== Account Information ===\n")
-    print(f"Account:      {info.account.title}")
+    print(f"Account:      {info.account.id}")
     print(f"Plan:         {info.account.plan_type}")
     print(f"Status:       {info.account.status}")
-    print(f"Emails (24h): {info.account.emails_sent_last_24hrs}")
-    print(f"Emails (mo):  {info.account.emails_usage_this_month}")
+    print(f"Credits:      {info.account.credit_balance}")
+    print(f"Rate limit:   {info.account.limit_per_second}/s")
     print()
 
     print("=== Domains ===\n")

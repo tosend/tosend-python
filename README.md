@@ -127,13 +127,46 @@ for result in response.results:
 ```python
 info = client.get_account_info()
 
-print(info.account.title)
-print(info.account.emails_usage_this_month)
-print(info.account.emails_sent_last_24hrs)
+print(info.account.status)            # "active"
+print(info.account.credit_balance)    # None means the account does not consume credits
+print(info.account.limit_per_second)
+print(info.account.bounce_rate)       # a fraction between 0 and 1
 
 for domain in info.domains:
     print(f"{domain.domain_name}: {domain.verification_status}")
 ```
+
+## Admin API
+
+`ToSendAdmin` is a separate client for the [Admin API](https://tosend.com/docs/api/admin-api). It takes an admin key (`tsend_admin_...`) and refuses a sending key at construction. Each call needs the matching [scope](https://tosend.com/docs/api/admin-api#scopes) on the key; a missing one raises `ToSendError` with status 403 and `error.code == "insufficient_scope"`.
+
+```python
+import os
+from tosend import ToSendAdmin
+
+admin = ToSendAdmin(os.environ["TOSEND_ADMIN_KEY"])
+
+# Act on one of your client teams (sends X-Account-Id)
+client = admin.for_account(4203)
+
+domain = client.create_domain("client.example.com")
+detail = client.get_domain(domain["id"])
+print(detail["dns_records"]["dkim"])  # show these records to your client
+
+# Needs api_keys:write and emails:send
+key = client.create_sending_key("Client: Acme Corp")
+print(key["api_key"])  # returned once, store it now
+
+# Needs emails:send
+client.send(
+    from_address={"email": "hello@client.example.com"},
+    to=[{"email": "user@example.com"}],
+    subject="Hi",
+    html="<p>Hello</p>",
+)
+```
+
+Also available: `get_info`, `list_domains`, `delete_domain`, `list_emails`, `get_email`, `list_suppressions`, `delete_suppression`, `list_webhooks`, `create_webhook`, `update_webhook`, `delete_webhook`, `list_sending_keys`, `delete_sending_key`, `list_teams`, `create_team`, `update_team` and `batch`. List methods take `page` and `per_page` and return a dict with `data`, `total`, `page` and `per_page`; single-resource methods return the resource as a dict.
 
 ## Configuration
 
