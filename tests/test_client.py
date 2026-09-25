@@ -175,3 +175,17 @@ class AccountInfoTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UserAgentTest(unittest.TestCase):
+    """Python-urllib's default agent is blocked by Cloudflare (403, error 1010)."""
+
+    def test_every_request_sends_the_sdk_user_agent(self):
+        from tosend.client import USER_AGENT
+        for client in (ToSend("tsend_x"), ToSendAdmin("tsend_admin_x")):
+            with mock.patch("tosend.client.urlopen") as op:
+                op.return_value.__enter__.return_value.read.return_value = b"{}"
+                (client.get_account_info if isinstance(client, ToSend) else client.get_info)()
+                req = op.call_args[0][0]
+                self.assertEqual(req.get_header("User-agent"), USER_AGENT)
+                self.assertTrue(USER_AGENT.startswith("tosend-python/"))

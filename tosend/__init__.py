@@ -19,7 +19,7 @@ from .types import (
     AccountInfo,
 )
 
-__version__ = "1.1.0"
+from .client import __version__  # noqa: F401  (single source of truth)
 __all__ = [
     "ToSend",
     "ToSendAdmin",
