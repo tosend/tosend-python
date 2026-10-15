@@ -23,9 +23,13 @@ class Attachment:
     type: str  # MIME type
     name: str  # Filename
     content: str  # Base64 encoded content
+    content_id: Optional[str] = None  # Embeds it inline: reference as cid:<content_id> in the HTML
 
     def to_dict(self) -> Dict[str, str]:
-        return {"type": self.type, "name": self.name, "content": self.content}
+        d = {"type": self.type, "name": self.name, "content": self.content}
+        if self.content_id:
+            d["content_id"] = self.content_id
+        return d
 
 
 @dataclass

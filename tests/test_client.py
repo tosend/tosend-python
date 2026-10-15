@@ -11,7 +11,7 @@ from urllib.parse import urlparse, parse_qs
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from tosend import ToSend, ToSendAdmin, ToSendError  # noqa: E402
+from tosend import Attachment, ToSend, ToSendAdmin, ToSendError  # noqa: E402
 
 ADMIN_KEY = "tsend_admin_0123456789abcdef0123456789abcdef"
 
@@ -94,6 +94,23 @@ class AdminKeyTests(unittest.TestCase):
     def test_single_resource_calls_unwrap_data(self):
         with reply({"data": {"id": 9, "name": "Acme", "status": "active"}}):
             self.assertEqual(ToSendAdmin(ADMIN_KEY).create_team("Acme")["id"], 9)
+
+    def test_create_team_sends_region_only_when_given(self):
+        with reply({"data": {"id": 8, "ses_region": "eu-central-1"}}) as m:
+            team = ToSendAdmin(ADMIN_KEY).create_team("Clients EU", ses_region="eu-central-1")
+        self.assertEqual(json.loads(sent_request(m).data), {"name": "Clients EU", "ses_region": "eu-central-1"})
+        self.assertEqual(team["ses_region"], "eu-central-1")
+
+        with reply({"data": {"id": 9}}) as m:
+            ToSendAdmin(ADMIN_KEY).create_team("Clients")
+        self.assertEqual(json.loads(sent_request(m).data), {"name": "Clients"})
+
+    def test_attachment_content_id_only_when_set(self):
+        self.assertEqual(
+            Attachment(type="image/png", name="logo.png", content="cG5n", content_id="logo@x.com").to_dict(),
+            {"type": "image/png", "name": "logo.png", "content": "cG5n", "content_id": "logo@x.com"},
+        )
+        self.assertNotIn("content_id", Attachment(type="application/pdf", name="a.pdf", content="cGRm").to_dict())
 
     def test_list_emails_maps_from_(self):
         with reply({"data": []}) as m:

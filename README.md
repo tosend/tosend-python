@@ -95,6 +95,30 @@ response = client.send(
 )
 ```
 
+### Inline Images
+
+Give an attachment a `content_id` and reference it from the HTML with `cid:`:
+
+```python
+with open("logo.png", "rb") as f:
+    logo = base64.b64encode(f.read()).decode()
+
+response = client.send(
+    from_address={"email": "hello@yourdomain.com"},
+    to=[{"email": "user@example.com"}],
+    subject="Welcome",
+    html='<img src="cid:logo@yourdomain.com" alt="Logo">',
+    attachments=[
+        {
+            "type": "image/png",
+            "name": "logo.png",
+            "content": logo,
+            "content_id": "logo@yourdomain.com",
+        }
+    ],
+)
+```
+
 ### Batch Sending
 
 Send multiple emails in a single request:
@@ -130,7 +154,6 @@ info = client.get_account_info()
 print(info.account.status)            # "active"
 print(info.account.credit_balance)    # None means the account does not consume credits
 print(info.account.limit_per_second)
-print(info.account.bounce_rate)       # a fraction between 0 and 1
 
 for domain in info.domains:
     print(f"{domain.domain_name}: {domain.verification_status}")
@@ -166,7 +189,7 @@ client.send(
 )
 ```
 
-Also available: `get_info`, `list_domains`, `delete_domain`, `list_emails`, `get_email`, `list_suppressions`, `delete_suppression`, `list_webhooks`, `create_webhook`, `update_webhook`, `delete_webhook`, `list_sending_keys`, `delete_sending_key`, `list_teams`, `create_team`, `update_team` and `batch`. List methods take `page` and `per_page` and return a dict with `data`, `total`, `page` and `per_page`; single-resource methods return the resource as a dict.
+Also available: `get_info`, `list_domains`, `delete_domain`, `list_emails`, `get_email`, `list_suppressions`, `delete_suppression`, `list_webhooks`, `create_webhook`, `update_webhook`, `delete_webhook`, `list_sending_keys`, `delete_sending_key`, `list_teams`, `create_team` (`create_team("Acme", ses_region="eu-central-1")` for an EU team; the region can't be changed later), `update_team` and `batch`. List methods take `page` and `per_page` and return a dict with `data`, `total`, `page` and `per_page`; single-resource methods return the resource as a dict.
 
 ## Configuration
 

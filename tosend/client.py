@@ -17,7 +17,7 @@ from .exceptions import ToSendError
 # Sent on every request. Without it urllib identifies as "Python-urllib/x.y",
 # which Cloudflare's browser integrity check in front of api.tosend.com
 # rejects with "403 error code: 1010" before the request reaches the API.
-__version__ = "1.1.1"
+__version__ = "1.2.0"
 USER_AGENT = f"tosend-python/{__version__}"
 
 

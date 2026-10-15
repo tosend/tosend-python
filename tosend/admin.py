@@ -270,9 +270,16 @@ class ToSendAdmin(_BaseClient):
         """
         return self._data(self._request("GET", "/v2/teams"))
 
-    def create_team(self, name: str) -> Dict[str, Any]:
-        """Only the parent account can create teams, so do not use for_account()."""
-        return self._data(self._request("POST", "/v2/teams", {"name": name}))
+    def create_team(self, name: str, ses_region: Optional[str] = None) -> Dict[str, Any]:
+        """Only the parent account can create teams, so do not use for_account().
+
+        ``ses_region`` is ``"us-east-1"`` (the default) or ``"eu-central-1"``,
+        and cannot be changed once the team exists.
+        """
+        payload: Dict[str, Any] = {"name": name}
+        if ses_region is not None:
+            payload["ses_region"] = ses_region
+        return self._data(self._request("POST", "/v2/teams", payload))
 
     def update_team(self, id: int, name: Optional[str] = None, status: Optional[str] = None) -> Dict[str, Any]:
         """Rename a team and/or set ``status`` to ``"active"`` or ``"suspended"``."""
